@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+scipy
+numpy
+matplotlib
+pydantic
+asyncpg
+databases
+psycopg2-binary
