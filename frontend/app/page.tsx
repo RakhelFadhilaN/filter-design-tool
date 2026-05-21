@@ -283,7 +283,7 @@ export default function FilterDesigner() {
   const fetchPresets = async () => {
     setPresetsLoading(true);
     try {
-      const res = await fetch(`${api}/presets`);
+      const res = await fetch(`${API}/presets`);
       if (!res.ok) throw new Error(await res.text());
       const data: Preset[] = await res.json();
       setPresets(data);
