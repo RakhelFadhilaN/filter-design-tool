@@ -244,7 +244,7 @@ export default function FilterDesigner() {
     setError(null);
     setPlotUrl(null);
     try {
-      const res = await fetch("${API}/filter", {
+      const res = await fetch(`${API}/filter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(buildBody()),
@@ -262,7 +262,7 @@ export default function FilterDesigner() {
 
   const downloadJson = useCallback(async () => {
     try {
-      const res = await fetch("${API}/filter/coeffs", {
+      const res = await fetch(`${API}/filter/coeffs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(buildBody()),
@@ -283,7 +283,7 @@ export default function FilterDesigner() {
   const fetchPresets = async () => {
     setPresetsLoading(true);
     try {
-      const res = await fetch("${API}/presets");
+      const res = await fetch(`${api}/presets`);
       if (!res.ok) throw new Error(await res.text());
       const data: Preset[] = await res.json();
       setPresets(data);
@@ -298,7 +298,7 @@ export default function FilterDesigner() {
     if (!saveName.trim()) return;
     setSaving(true);
     try {
-      const res = await fetch("${API}/presets", {
+      const res = await fetch(`${API}/presets`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -350,7 +350,7 @@ export default function FilterDesigner() {
     setCompareLoading(true);
     setCompareError(null);
     try {
-      const res = await fetch("${API}/presets/compare", {
+      const res = await fetch(`${API}/presets/compare`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedIds),
