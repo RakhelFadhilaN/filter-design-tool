@@ -82,7 +82,7 @@ function defaultStage(): FilterStage {
     cutoff_low: 800,
     cutoff_high: 1200,
     bp_fc: 1000,
-    bp_bandwidth_oct: 0.333,
+    bp_bandwidth_oct: 200,
     bp_gain_db: 0,
     gain_db: 0,
   };
@@ -136,6 +136,7 @@ export default function FilterDesigner() {
   // Presets (DB-backed)
   const [presets, setPresets] = useState<Preset[]>([]);
   const [presetsLoading, setPresetsLoading] = useState(false);
+  const [loadedPresetName, setLoadedPresetName] = useState<string | null>(null);
 
   // Save modal
   const [saveModalOpen, setSaveModalOpen] = useState(false);
@@ -187,6 +188,14 @@ export default function FilterDesigner() {
   useEffect(() => {
     fetchPresets();
   }, []);
+
+  // Auto-simulate when a preset is loaded
+  useEffect(() => {
+    if (loadedPresetName !== null) {
+      runFilter();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedPresetName]);
 
   // Auto-compare when 2+ presets are selected
   useEffect(() => {
@@ -272,7 +281,9 @@ export default function FilterDesigner() {
       a.href = URL.createObjectURL(
         new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
       );
-      a.download = "filter_coeffs.json";
+      a.download = loadedPresetName
+        ? `${loadedPresetName.replace(/[^a-z0-9_\-]/gi, "_")}_coeffs.json`
+        : "filter_coeffs.json";
       a.click();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e));
@@ -337,6 +348,7 @@ export default function FilterDesigner() {
     setOutputFormat(preset.config.output_format);
     setPlotUrl(null);
     setCompareMode(false);
+    setLoadedPresetName(preset.name);
   };
 
   const toggleSelect = (id: number) => {
@@ -1005,7 +1017,7 @@ function BandCard({ stage, index, onUpdate }: BandCardProps) {
         {isBP && (
           <div className="space-y-2 pt-1">
             <SliderRow label="Center freq (Hz)" min={20} max={20000} step={1} value={stage.bp_fc} onChange={(v) => onUpdate({ bp_fc: v })} display={`${stage.bp_fc} Hz`} />
-            <SliderRow label="Bandwidth (oct)" min={0.1} max={3} step={0.05} value={stage.bp_bandwidth_oct} onChange={(v) => onUpdate({ bp_bandwidth_oct: v })} display={`${stage.bp_bandwidth_oct.toFixed(2)} oct`} />
+            <SliderRow label="Bandwidth (Hz)" min={10} max={10000} step={1} value={stage.bp_bandwidth_oct} onChange={(v) => onUpdate({ bp_bandwidth_oct: v })} display={`${stage.bp_bandwidth_oct.toFixed(0)} Hz`} />
             <SliderRow label="Gain (dB)" min={-18} max={18} step={0.5} value={stage.bp_gain_db} onChange={(v) => onUpdate({ bp_gain_db: v })} display={`${stage.bp_gain_db > 0 ? "+" : ""}${stage.bp_gain_db.toFixed(1)} dB`} />
           </div>
         )}

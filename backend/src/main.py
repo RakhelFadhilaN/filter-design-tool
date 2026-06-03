@@ -59,7 +59,7 @@ class Band(BaseModel):
 
       lowpass / highpass → cutoff (Hz)
       bandstop           → cutoff_low + cutoff_high (Hz)
-      bandpass           → fc + bandwidth_oct (Hz / octaves)
+      bandpass           → fc + bandwidth_oct (Hz / Hz bandwidth)
     """
     band_type:     Literal["lowpass", "highpass", "bandpass", "bandstop"]
     gain_db:       float           = 0.0
@@ -86,13 +86,13 @@ class Band(BaseModel):
             if self.fc is None:
                 raise ValueError("'bandpass' requires fc")
             if self.bandwidth_oct is None:
-                self.bandwidth_oct = 0.333
+                self.bandwidth_oct = 200
         return self
 
     def bp_edges(self) -> tuple[float, float]:
-        f    = 2 ** (self.bandwidth_oct / 2)
-        low  = self.fc / f
-        high = self.fc * f
+        half = self.bandwidth_oct / 2.0   # bandwidth_oct now stores Hz
+        low  = self.fc - half
+        high = self.fc + half
         return max(low, 1.0), max(high, low + 1.0)
 
 
