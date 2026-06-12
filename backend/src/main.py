@@ -326,8 +326,7 @@ def combine_coeffs(req: ChainRequest) -> dict:
     else:
         z_out, p_out, k_out = signal.tf2zpk(b_out, a_common)
         sos_out = signal.zpk2sos(z_out, p_out, k_out)
-        return {"output_format": "sos", "sos": sos_out.tolist(), "shape": list(sos_out.shape)}
-
+        return {"output_format": "sos", "sos": sos_out.tolist(), "shape": list(sos_out.shape), "order": sos_out.shape[0] * 2}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Plot
